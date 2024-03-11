@@ -53,7 +53,7 @@ describe('POC Tests', () => {
   })
   //Test PATCH Request with a body
   describe('PATCH Request', () => {
-    it.only('PATCH /posts/{id}', async () => {
+    it('PATCH /posts/{id}', async () => {
       const req = {
         "title": "My Name is UpdatedAnothyJeevanKumar",
       }
@@ -67,6 +67,15 @@ describe('POC Tests', () => {
       expect(res.body.title).not.toBe(beforeTitle); // null
       expect(res.body.title).toBe(req.title)
       console.log(res)
+    })
+  })
+
+   //Test DELETE Request with a body
+   describe('DELETE requests', () => {
+    it.only('DELETE /posts/{id}', async () => {
+      const res = await request.delete('/posts/1');
+      expect(res.statusCode).toBe(200)
+      expect(res.body).toEqual({})
     })
   })
 
