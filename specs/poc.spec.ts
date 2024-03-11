@@ -38,7 +38,7 @@ describe('POC Tests', () => {
 
   //Test PUT Request with a body
   describe('PUT Request', () => {
-    it.only('PUT /posts/{id}', async () => {
+    it('PUT /posts/{id}', async () => {
       const req = {
         "userId": 5,
         "title": "My Name is UpdatedAnothyJeevan",
@@ -51,4 +51,23 @@ describe('POC Tests', () => {
       expect(res.body.title).toBe(req.title)
     })
   })
+  //Test PATCH Request with a body
+  describe('PATCH Request', () => {
+    it.only('PATCH /posts/{id}', async () => {
+      const req = {
+        "title": "My Name is UpdatedAnothyJeevanKumar",
+      }
+
+      const getRes = await request.get('/posts/1');
+      const beforeTitle = getRes.body.title;
+      const res = await request
+        .patch('/posts/1')
+        .send(req)
+
+      expect(res.body.title).not.toBe(beforeTitle); // null
+      expect(res.body.title).toBe(req.title)
+      console.log(res)
+    })
+  })
+
 })
