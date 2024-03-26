@@ -71,6 +71,31 @@ describe('Brands ',()=> {
             expect(res.body.error).toEqual('Brand name is too short');
         });
 
+        it('Schema Verification - Name more than 30 characters is not allowed ', async()=> {
+            const req={
+                "name":"dsdsadas dfff sfsf sffff fasfasfasf"
+            }
+            const res = await request
+            .post('/brands')
+            .send(req)  ;
+     
+            expect(res.statusCode).toBe(422);
+            expect(res.body.error).toEqual('Brand name is too long');
+        });
+
+        it('Schema Verification - Brand description can only be a string', async()=> {
+            const req={
+                "name":"Test Brand "+ Math.floor(Math.random()* 10000),
+                "description" : 9999,
+            }
+            const res = await request
+            .post('/brands')
+            .send(req)  ;
+  
+            expect(res.statusCode).toBe(422);
+            expect(res.body.error).toEqual('Brand description must be a string');
+        });
+
         it('Business Validation Request - Check to create brand with the same name', async () => {
             const name = "Test Brand "+ Math.floor(Math.random()* 10000);
             const req = {
@@ -97,6 +122,41 @@ describe('Brands ',()=> {
             expect(res.statusCode).toBe(404);
             console.log(res);
             expect(res.body.error).toBe('Brand not found.');
+        })
+
+        it('Business Validation Update Request - Throw an Error for Updating an invalid brand', async () => {
+            const req = {
+                "name": "Test Brand "+ Math.floor(Math.random()* 10000),
+                "description": "Camera Small Brands"
+              }
+            const res = await request
+              .post('/brands')
+              .send(req)  ;
+    
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toBe(req.name);
+            expect(res. body).toHaveProperty('createdAt')
+            expect(res.body.description).toBe(req.description);  
+            newBrand = res.body; 
+           
+            const req2 = {
+                "name": "chocolate"+ ' updated'
+              }
+            const res2 = await request
+              .put('/brands/'+newBrand._id)
+              .send(req2)  ;
+            console.log(res2);
+            expect(res2.statusCode).toEqual(422);
+            expect(res2.body.error).toBe('Unable to update brands');
+            
+        })
+
+        it('Business Validation Delete invalid brand ', async () => {
+            const res = await request
+              .delete('/brands/'+44444);
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.error).toBe('Unable to delete brand');
+            
         })
     });
 
