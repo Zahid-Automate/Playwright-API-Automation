@@ -30,7 +30,49 @@ describe('Brands ',()=> {
     
     })
     
-    describe('Create Brands Test',()=>{
+    describe.only('Create Brands Test',()=>{
+        it('POST /brands', async () => {
+            const req = {
+                "name": "Test Brand "+ Math.floor(Math.random()* 10000),
+                "description": "Camera Small Brands"
+              }
+            const res = await request
+              .post('/brands')
+              .send(req)  ;
+            console.log(req);
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toBe(req.name);
+            expect(res. body).toHaveProperty('createdAt')
+            expect(res.body.description).toBe(req.description);  
+            newBrand = res.body;  
+
+    })
+        it('Schema Verification - Name is a mandatory field ', async()=> {
+            const req={
+                "name":""
+            }
+            const res = await request
+            .post('/brands')
+            .send(req)  ;
+
+            expect(res.statusCode).toBe(422);
+            expect(res.body.error).toEqual('Name is required');
+        });
+
+        it('Schema Verification - Min char length for name should be > 1 ', async()=> {
+            const req={
+                "name":"a"
+            }
+            const res = await request
+            .post('/brands')
+            .send(req)  ;
+
+            expect(res.statusCode).toBe(422);
+            expect(res.body.error).toEqual('Brand name is too short');
+        });
+    });
+
+    describe('Create and Fetch Brands Test',()=>{
         it('POST /brands', async () => {
             const req = {
                 "name": "Test Brand "+ Math.floor(Math.random()* 10000),
