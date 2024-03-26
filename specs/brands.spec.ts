@@ -70,6 +70,34 @@ describe('Brands ',()=> {
             expect(res.statusCode).toBe(422);
             expect(res.body.error).toEqual('Brand name is too short');
         });
+
+        it('Business Validation Request - Check to create brand with the same name', async () => {
+            const name = "Test Brand "+ Math.floor(Math.random()* 10000);
+            const req = {
+                "name": name,
+                "description": "Camera Small Brands"
+              }
+
+            //First request
+            await request
+              .post('/brands')
+              .send(req)  ;
+           
+            //Second request
+            const res2 = await request
+            .post('/brands')
+            .send(req)  ;
+
+            expect(res2.statusCode).toEqual(422);
+            expect(res2.body.error).toContain('already exists');
+         })
+
+         it('Business Validation GET Request - Check with an Invalid id', async () => {
+            const res = await request.get('/brands/643fc8e9bf61a96982033333');
+            expect(res.statusCode).toBe(404);
+            console.log(res);
+            expect(res.body.error).toBe('Brand not found.');
+        })
     });
 
     describe('Create and Fetch Brands Test',()=>{
