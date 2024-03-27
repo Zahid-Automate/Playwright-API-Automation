@@ -1,18 +1,16 @@
-import * as supertest from 'supertest';
-
-const request = supertest('https://practice-react.sdetunicorns.com/api/test');
+import controller from '../controller/brand.controller';
 
 describe('Brands', () => {
     describe('Retrieve Brands Tests', () => {
         it('GET /brands', async () => {
-            const res = await request.get('/brands');
+            const res = await controller.getBrands();
             expect(res.statusCode).toBe(200);
             expect(res.body.length).toBeGreaterThan(100);
             expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
         });
 
         it('GET /brands/{id}', async () => {
-            const res = await request.get('/brands/65d1b173986188d4dce446ad');
+            const res = await controller.getBrandById('65d1b173986188d4dce446ad');
             expect(res.statusCode).toBe(200);
             expect(Object.keys(res.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
             expect(res.body.name).toBe('zahid');
@@ -26,9 +24,7 @@ describe('Brands', () => {
             "description": "Camera Small Brands"
         };
         beforeAll(async () => {
-          postBrand = await request
-            .post('/brands')
-            .send(data);
+          postBrand = await controller.postBrands(data);
         });
 
         it('POST /brands', () => {
@@ -43,17 +39,14 @@ describe('Brands', () => {
         });
 
         afterAll(async()=>{
-            postBrand = await request
-            .delete('/brands/'+postBrand.body._id);
+           await controller.deleteBrand(postBrand.body._id);
         });
 
         it('Schema Verification - Name is a mandatory field ', async()=> {
             const req={
                 "name":""
             }
-            const res = await request
-            .post('/brands')
-            .send(req)  ;
+            const res = await controller.postBrands(req);
 
             expect(res.statusCode).toBe(422);
             expect(res.body.error).toEqual('Name is required');
@@ -63,9 +56,7 @@ describe('Brands', () => {
             const req={
                 "name":"a"
             }
-            const res = await request
-            .post('/brands')
-            .send(req)  ;
+            const res= await controller.postBrands(req);
 
             expect(res.statusCode).toBe(422);
             expect(res.body.error).toEqual('Brand name is too short');
@@ -75,10 +66,8 @@ describe('Brands', () => {
             const req={
                 "name":"dsdsadas dfff sfsf sffff fasfasfasf"
             }
-            const res = await request
-            .post('/brands')
-            .send(req)  ;
-     
+            const res= await controller.postBrands(req);
+
             expect(res.statusCode).toBe(422);
             expect(res.body.error).toEqual('Brand name is too long');
         });
@@ -88,9 +77,7 @@ describe('Brands', () => {
                 "name":"Test Brand "+ Math.floor(Math.random()* 10000),
                 "description" : 9999,
             }
-            const res = await request
-            .post('/brands')
-            .send(req)  ;
+            const res= await controller.postBrands(req);
   
             expect(res.statusCode).toBe(422);
             expect(res.body.error).toEqual('Brand description must be a string');
@@ -98,16 +85,14 @@ describe('Brands', () => {
 
         it('Business Validation Request - Dup Brand not allowed - Check to create brand with the same name', async () => {
             //Second request
-            const res2 = await request
-            .post('/brands')
-            .send(data)  ;
+            const res2= await controller.postBrands(data);
 
             expect(res2.statusCode).toEqual(422);
             expect(res2.body.error).toContain('already exists');
          })
 
          it('Business Validation GET Request - Check with an Invalid id', async () => {
-            const res = await request.get('/brands/643fc8e9bf61a96982033333');
+            const res = await controller.getBrandById('643fc8e9bf61a96982033333');
             expect(res.statusCode).toBe(404);
             console.log(res);
             expect(res.body.error).toBe('Brand not found.');
@@ -117,17 +102,15 @@ describe('Brands', () => {
             const req2 = {
                 "name": "chocolate"+ ' updated'
               }
-            const res2 = await request
-              .put('/brands/'+postBrand.body._id)
-              .send(req2)  ;
+            const res2= await controller.putBrands('123',req2);
             console.log(res2);
             expect(res2.statusCode).toEqual(422);
             expect(res2.body.error).toBe('Unable to update brands');  
         })
 
         it('Business Validation Delete invalid brand ', async () => {
-            const res = await request
-              .delete('/brands/'+44444);
+            const res = await controller.deleteBrand('abcdefg');
+    
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toBe('Unable to delete brand');
             
@@ -141,19 +124,18 @@ describe('Brands', () => {
                 "name": "Test Brand " + Math.floor(Math.random() * 10000),
                 "description": "Camera Small Brands"
             };
-            postBrand = await request.post('/brands').send(data);
+            postBrand = await controller.postBrands(data);
         });
 
         it('GET /brands/{id}', async () => {
-            const res = await request.get('/brands/' + postBrand.body._id);
+            const res = await controller.getBrandById(postBrand.body._id);
             expect(res.statusCode).toBe(200);
             expect(Object.keys(res.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
             expect(res.body.name).toBe(postBrand.body.name);
         });
 
         afterAll(async()=>{
-            postBrand = await request
-            .delete('/brands/'+postBrand.body._id);
+            postBrand = await controller.deleteBrand(postBrand.body._id);
         });
     });
 
@@ -164,23 +146,20 @@ describe('Brands', () => {
             "description": "Camera Small Brands"
         };
         beforeAll(async () => {
-          postBrand = await request
-            .post('/brands')
-            .send(data);
+          postBrand = await controller.postBrands(data);
         });
         it('PUT /brands/{id}', async () => {
             const req = {
                 "name": postBrand.body.name + ' updated'
             };
-            const res = await request.put('/brands/' + postBrand.body._id).send(req);
+            const res = await controller.putBrands(postBrand.body._id,req);
 
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toBe(req.name);
             expect(res.body).toHaveProperty('createdAt');
         });
         afterAll(async()=>{
-            postBrand = await request
-            .delete('/brands/'+postBrand.body._id);
+            postBrand = await controller.deleteBrand(postBrand.body._id);
         });
     });
 
@@ -191,12 +170,10 @@ describe('Brands', () => {
             "description": "Camera Small Brands"
         };
         beforeAll(async () => {
-          postBrand = await request
-            .post('/brands')
-            .send(data);
+          postBrand = await controller.postBrands(data);
         });
         it('DELETE /brands/{id}', async () => {
-            const res = await request.delete('/brands/' + postBrand.body._id);
+            const res = await controller.deleteBrand(postBrand.body._id);
             expect(res.statusCode).toEqual(200);
         });
     });
