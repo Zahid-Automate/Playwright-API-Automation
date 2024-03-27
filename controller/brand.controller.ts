@@ -8,24 +8,24 @@ class BrandController {
   }
 
   getBrandById(id: string) {
-    return request.get('/brands/' + id)
+    return request.get('/brands/' + id);
   }
 
   postBrands(data: { [key: string]: string | number }) {
     return request
       .post('/brands')
-      .send(data)
+      .send(data);
   }
 
   putBrands(id: string, data: { [key: string]: string }) {
     return request
       .put('/brands/' + id)
-      .send(data)
+      .send(data);
   }
 
   deleteBrand(id: string) {
     return request
-      .delete('/brands/' + id)
+      .delete('/brands/' + id);
   }
 }
 
