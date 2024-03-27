@@ -3,8 +3,6 @@ import * as supertest from 'supertest';
 const request = supertest('https://practice-react.sdetunicorns.com/api/test');
 
 describe('Brands', () => {
-    let newBrand;
-
     describe('Retrieve Brands Tests', () => {
         it('GET /brands', async () => {
             const res = await request.get('/brands');
@@ -42,6 +40,11 @@ describe('Brands', () => {
             const receivedKeys = new Set(Object.keys(postBrand.body));
             expect(receivedKeys).toEqual(expectedKeys);
             //expect(Object.keys(postBrand.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
+        });
+
+        afterAll(async()=>{
+            postBrand = await request
+            .delete('/brands/'+postBrand.body._id);
         });
 
         it('Schema Verification - Name is a mandatory field ', async()=> {
@@ -94,7 +97,6 @@ describe('Brands', () => {
         });
 
         it('Business Validation Request - Dup Brand not allowed - Check to create brand with the same name', async () => {
-           
             //Second request
             const res2 = await request
             .post('/brands')
@@ -111,31 +113,16 @@ describe('Brands', () => {
             expect(res.body.error).toBe('Brand not found.');
         })
 
-        it('Business Validation Update Request - Throw an Error for Updating an invalid brand', async () => {
-            const req = {
-                "name": "Test Brand "+ Math.floor(Math.random()* 10000),
-                "description": "Camera Small Brands"
-              }
-            const res = await request
-              .post('/brands')
-              .send(req)  ;
-    
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toBe(req.name);
-            expect(res. body).toHaveProperty('createdAt')
-            expect(res.body.description).toBe(req.description);  
-            newBrand = res.body; 
-           
+        it('Business Validation Update Request - Throw an Error for Updating an invalid brand', async () => {          
             const req2 = {
                 "name": "chocolate"+ ' updated'
               }
             const res2 = await request
-              .put('/brands/'+newBrand._id)
+              .put('/brands/'+postBrand.body._id)
               .send(req2)  ;
             console.log(res2);
             expect(res2.statusCode).toEqual(422);
-            expect(res2.body.error).toBe('Unable to update brands');
-            
+            expect(res2.body.error).toBe('Unable to update brands');  
         })
 
         it('Business Validation Delete invalid brand ', async () => {
@@ -149,7 +136,6 @@ describe('Brands', () => {
 
     describe('Fetch Individual brand', () => {
         let postBrand;
-
         beforeAll(async () => {
             const data = {
                 "name": "Test Brand " + Math.floor(Math.random() * 10000),
@@ -163,6 +149,11 @@ describe('Brands', () => {
             expect(res.statusCode).toBe(200);
             expect(Object.keys(res.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
             expect(res.body.name).toBe(postBrand.body.name);
+        });
+
+        afterAll(async()=>{
+            postBrand = await request
+            .delete('/brands/'+postBrand.body._id);
         });
     });
 
@@ -186,6 +177,10 @@ describe('Brands', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toBe(req.name);
             expect(res.body).toHaveProperty('createdAt');
+        });
+        afterAll(async()=>{
+            postBrand = await request
+            .delete('/brands/'+postBrand.body._id);
         });
     });
 
