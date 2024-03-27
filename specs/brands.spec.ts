@@ -1,52 +1,49 @@
 import * as supertest from 'supertest';
+
 const request = supertest('https://practice-react.sdetunicorns.com/api/test');
 
-describe('Brands ',()=> {
+describe('Brands', () => {
     let newBrand;
+
     describe('Retrieve Brands Tests', () => {
         it('GET /brands', async () => {
             const res = await request.get('/brands');
             expect(res.statusCode).toBe(200);
             expect(res.body.length).toBeGreaterThan(100);
-            expect(Object.keys(res.body[0])).toEqual(['_id', 'name'])
-        })
-    
-        it('GET /brands/{id}', async () => {
-            const res = await request.get('/brands/65d1b173986188d4dce446ad');
-            expect(res.statusCode).toBe(200);
-            console.log(res);
-            expect(Object.keys(res.body)).toEqual(['_id', 'name','description','createdAt','updatedAt','__v']);
-            expect(res.body.name).toBe('zahid');
-        })
-    
-        it('GET /brands/{id}', async () => {
-            const res = await request.get('/brands/65d1b173986188d4dce446ad');
-            expect(res.statusCode).toBe(200);
-            console.log(res);
-            expect(Object.keys(res.body)).toEqual(['_id', 'name','description','createdAt','updatedAt','__v']);
-            expect(res.body.name).toBe('zahid');
-        })   
-        
-    
-    })
-    
-    describe.only('Create Brands Test',()=>{
-        it('POST /brands', async () => {
-            const req = {
-                "name": "Test Brand "+ Math.floor(Math.random()* 10000),
-                "description": "Camera Small Brands"
-              }
-            const res = await request
-              .post('/brands')
-              .send(req)  ;
-            console.log(req);
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toBe(req.name);
-            expect(res. body).toHaveProperty('createdAt')
-            expect(res.body.description).toBe(req.description);  
-            newBrand = res.body;  
+            expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
+        });
 
-    })
+        it('GET /brands/{id}', async () => {
+            const res = await request.get('/brands/65d1b173986188d4dce446ad');
+            expect(res.statusCode).toBe(200);
+            expect(Object.keys(res.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
+            expect(res.body.name).toBe('zahid');
+        });
+    });
+
+    describe('Create Brands', () => {
+        let postBrand;
+        const data = {
+            "name": "Test Brand " + Math.floor(Math.random() * 10000),
+            "description": "Camera Small Brands"
+        };
+        beforeAll(async () => {
+          postBrand = await request
+            .post('/brands')
+            .send(data);
+        });
+
+        it('POST /brands', () => {
+            console.log(JSON.stringify(postBrand, null, 2));
+            expect(postBrand.statusCode).toBe(200);
+            expect(postBrand.body.name).toEqual(data.name);
+            expect(postBrand.body).toHaveProperty('createdAt');
+            const expectedKeys = new Set(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
+            const receivedKeys = new Set(Object.keys(postBrand.body));
+            expect(receivedKeys).toEqual(expectedKeys);
+            //expect(Object.keys(postBrand.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
+        });
+
         it('Schema Verification - Name is a mandatory field ', async()=> {
             const req={
                 "name":""
@@ -96,22 +93,12 @@ describe('Brands ',()=> {
             expect(res.body.error).toEqual('Brand description must be a string');
         });
 
-        it('Business Validation Request - Check to create brand with the same name', async () => {
-            const name = "Test Brand "+ Math.floor(Math.random()* 10000);
-            const req = {
-                "name": name,
-                "description": "Camera Small Brands"
-              }
-
-            //First request
-            await request
-              .post('/brands')
-              .send(req)  ;
+        it('Business Validation Request - Dup Brand not allowed - Check to create brand with the same name', async () => {
            
             //Second request
             const res2 = await request
             .post('/brands')
-            .send(req)  ;
+            .send(data)  ;
 
             expect(res2.statusCode).toEqual(422);
             expect(res2.body.error).toContain('already exists');
@@ -160,55 +147,62 @@ describe('Brands ',()=> {
         })
     });
 
-    describe('Create and Fetch Brands Test',()=>{
-        it('POST /brands', async () => {
-            const req = {
-                "name": "Test Brand "+ Math.floor(Math.random()* 10000),
+    describe('Fetch Individual brand', () => {
+        let postBrand;
+
+        beforeAll(async () => {
+            const data = {
+                "name": "Test Brand " + Math.floor(Math.random() * 10000),
                 "description": "Camera Small Brands"
-              }
-            const res = await request
-              .post('/brands')
-              .send(req)  ;
-            console.log(req);
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toBe(req.name);
-            expect(res. body).toHaveProperty('createdAt')
-            expect(res.body.description).toBe(req.description);  
-            newBrand = res.body;  
-        })
-    
+            };
+            postBrand = await request.post('/brands').send(data);
+        });
+
         it('GET /brands/{id}', async () => {
-            const res = await request.get('/brands/'+newBrand._id);
+            const res = await request.get('/brands/' + postBrand.body._id);
             expect(res.statusCode).toBe(200);
-            console.log(res);
-            expect(Object.keys(res.body)).toEqual(['_id', 'name','description','createdAt','updatedAt','__v']);
-            expect(res.body.name).toBe(newBrand.name);
-        })   
-    })
-    
-    describe('Update Brands Test',()=>{
+            expect(Object.keys(res.body)).toEqual(['_id', 'name', 'description', 'createdAt', 'updatedAt', '__v']);
+            expect(res.body.name).toBe(postBrand.body.name);
+        });
+    });
+
+    describe('Update Brands Test', () => {
+        let postBrand;
+        const data = {
+            "name": "Test Brand " + Math.floor(Math.random() * 10000),
+            "description": "Camera Small Brands"
+        };
+        beforeAll(async () => {
+          postBrand = await request
+            .post('/brands')
+            .send(data);
+        });
         it('PUT /brands/{id}', async () => {
             const req = {
-                "name": newBrand.name + ' updated'
-              }
-            const res = await request
-              .put('/brands/'+newBrand._id)
-              .send(req)  ;
-    
+                "name": postBrand.body.name + ' updated'
+            };
+            const res = await request.put('/brands/' + postBrand.body._id).send(req);
+
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toBe(req.name);
-            expect(res. body).toHaveProperty('createdAt');
-            
-        })
-    })
-    
-    describe('Delete Brands Test',()=>{
-        it('DELETE /brands/{id}', async () => {
-            const res = await request
-              .delete('/brands/'+newBrand._id);
-            expect(res.statusCode).toEqual(200);
-            
-        })
-    })
+            expect(res.body).toHaveProperty('createdAt');
+        });
+    });
 
-})
+    describe('Delete Brands Test', () => {
+        let postBrand;
+        const data = {
+            "name": "Test Brand " + Math.floor(Math.random() * 10000),
+            "description": "Camera Small Brands"
+        };
+        beforeAll(async () => {
+          postBrand = await request
+            .post('/brands')
+            .send(data);
+        });
+        it('DELETE /brands/{id}', async () => {
+            const res = await request.delete('/brands/' + postBrand.body._id);
+            expect(res.statusCode).toEqual(200);
+        });
+    });
+});
