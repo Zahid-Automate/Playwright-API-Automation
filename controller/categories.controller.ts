@@ -8,7 +8,9 @@ class CategoriesController{
     }
 
     postCategories(data : {[key: string]: string}){
-        return request.post(data);
+        return request.
+        post('/categories').
+        send(data);
     }
 
     getCategoryById(id:String){
@@ -17,13 +19,13 @@ class CategoriesController{
 
     putCategoryById(id: string, data: { [key: string]: string }){
         return request
-        .put(id)
+        .put('/categories/'+id)
         .send(data);
     }
 
     deleteCategoryById(id:string){
         return request
-        .delete(id);
+        .delete('/categories/'+id);
     }
 }
 
