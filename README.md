@@ -15,4 +15,10 @@ Package.json should look like below <br />
 npx jest {filename}
 
 <h2>Reporting with jest using Junit</h2>
-npm install jest-junit --save-dev
+npm install jest-junit --save-dev<br/>
+<br/>
+  ==> Include the reporters in jest.config.js as per below <br/>
+  <br/>
+<img width="354" alt="image" src="https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/a42b6675-264b-49f1-882b-1d715414a0d7">
+
+
