@@ -1,7 +1,7 @@
 <h1>Setup</h2>
 Install packages: <br /> npm install --save-dev supertest<br />
                   npm install --save-dev ts-jest<br />
-                  npm i @types/jest@29.4.0   (make sure to match with @types/jest dependency)<br />
+                  npm i @types/jest@29.4.0  (make sure to match with @types/jest dependency)<br />
                   npm install --save @types/jest <br />
                   npm install --save @types/supertest<br />
 <br/>
@@ -14,7 +14,7 @@ Package.json file should look like below after all the above commands are run <b
 <h2>Run test</h2>
 npx jest {filename}
 
-<h2>Reporting with jest using Junit</h2>
+<h2>Reporting with Jest using Junit</h2>
 npm install jest-junit --save-dev<br/>
 <br/>
   ==> Include the reporters section in jest.config.js as per below <br/>
@@ -37,7 +37,14 @@ Adding a Jest HTML report
 </br>
 ==> Include the jest-html-reporters in jest.config.js as per below </br>
 </br>
-<img width="408" alt="image" src="https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/e64e4388-9f13-48ea-9d2f-d7bece0231e2">
+<img width="408" alt="image" src="https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/e64e4388-9f13-48ea-9d2f-d7bece0231e2"> </br>
+</br>
+Sample jest HTML report will look like below
+</br>
+
+![_C__Users_mzahi_Desktop_TypeScript-API-Automation_reports_jest_html_reporters html(iPad Pro)](https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/e06fe1b1-86e2-42d2-babd-79650180437d)
+
+
 
 
 
