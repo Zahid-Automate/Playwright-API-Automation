@@ -13,3 +13,6 @@ Package.json should look like below <br />
 
 <h2>Run test</h2>
 npx jest {filename}
+
+<h2>Reporting with jest using Junit</h2>
+npm install jest-junit --save-dev
