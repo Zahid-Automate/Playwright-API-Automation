@@ -1,6 +1,6 @@
 import baseConfig from '../config/base.config';
 import controller from '../controller/categories.controller';
-import { login } from '../utils/helper';
+import { getCategoryId, login } from '../utils/helper';
 
 describe('Categories', () => {
     const req = {
@@ -23,9 +23,7 @@ describe('Categories', () => {
     });
 
     describe('Create Category', () => {
-        let postCategory;
-        let token;
-
+        let token, categoryId;
         beforeAll(async () => {
             // const data = { "email": baseConfig.email, "password": baseConfig.password };
             // const res = await adminController.postAdminLogin(data);
@@ -41,26 +39,22 @@ describe('Categories', () => {
             const res = await controller
                 .postCategories(data)
                 .set("Authorization", "Bearer " + token);
-            console.log(JSON.stringify(postCategory, null, 2));
             expect(res.statusCode).toBe(200);
             expect(res.body.name).toEqual(data.name);
         });
     });
     describe('Update Category', () => {
-        let postCategory;
-        let token;
+        let token, categoryId;
         beforeAll(async () => {
             token = await login(baseConfig.email,baseConfig.password);
-            postCategory = await controller
-                .postCategories(req)
-                .set("Authorization", "Bearer " + token);
+            categoryId = await getCategoryId(token);
         });
         it('PUT /Category', async () => {
             const data = {
                 "name": "Test Category " + Math.floor(Math.random() * 10000) + "_Updated",
             };
             const res = await controller
-                .putCategoryById(postCategory.body._id, data)
+                .putCategoryById(categoryId, data)
                 .set("Authorization", "Bearer " + token);
             console.log(JSON.stringify(res, null, 2));
             expect(res.statusCode).toBe(200);
@@ -69,18 +63,14 @@ describe('Categories', () => {
     });
 
     describe('Delete Category', () => {
-        let postCategory;
-        let token;
+        let token , categoryId;
         beforeAll(async () => {
             token = await login(baseConfig.email,baseConfig.password);
-            postCategory = await controller
-                .postCategories(req)
-                .set("Authorization", "Bearer " + token);
-            console.log("delete zooooooom " + postCategory.body._id)
+            categoryId = await getCategoryId(token);
         });
         it('Delete /Category', async () => {
             const res = await controller
-                .deleteCategoryById(postCategory.body._id)
+                .deleteCategoryById(categoryId)
                 .set("Authorization", "Bearer " + token);
             console.log(JSON.stringify(res, null, 2));
             expect(res.statusCode).toBe(200);
