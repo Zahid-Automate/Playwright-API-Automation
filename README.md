@@ -21,4 +21,11 @@ npm install jest-junit --save-dev<br/>
   <br/>
 <img width="354" alt="image" src="https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/a42b6675-264b-49f1-882b-1d715414a0d7">
 
+</br>
+
+Sample junit xml report will look like below
+</br>
+
+<img width="857" alt="image" src="https://github.com/Zahid-Automate/TypeScript-API-Automation/assets/45691238/dfe6a29b-9612-4f26-aaa0-71f8a4ac1e81">
+
 
