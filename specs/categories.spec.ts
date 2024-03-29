@@ -1,6 +1,6 @@
 import baseConfig from '../config/base.config';
-import adminController from '../controller/admin.controller';
 import controller from '../controller/categories.controller';
+import { login } from '../utils/helper';
 
 describe('Categories', () => {
     const req = {
@@ -27,10 +27,11 @@ describe('Categories', () => {
         let token;
 
         beforeAll(async () => {
-            const data = { "email": baseConfig.email, "password": baseConfig.password };
-            const res = await adminController.postAdminLogin(data);
-            token = res.body.token;
-            console.log('Auth token is ' + token);
+            // const data = { "email": baseConfig.email, "password": baseConfig.password };
+            // const res = await adminController.postAdminLogin(data);
+            // token = res.body.token;
+            // console.log('Auth token is ' + token);
+            token = await login(baseConfig.email,baseConfig.password);
         });
 
         it('POST /Category', async () => {
@@ -49,14 +50,10 @@ describe('Categories', () => {
         let postCategory;
         let token;
         beforeAll(async () => {
-            const data = { "email": baseConfig.email, "password": baseConfig.password };
-            const res = await adminController.postAdminLogin(data);
-            token = res.body.token;
-            console.log('Auth token is ' + token);
+            token = await login(baseConfig.email,baseConfig.password);
             postCategory = await controller
                 .postCategories(req)
                 .set("Authorization", "Bearer " + token);
-            console.log("zooooooom " + postCategory.body._id)
         });
         it('PUT /Category', async () => {
             const data = {
@@ -75,10 +72,7 @@ describe('Categories', () => {
         let postCategory;
         let token;
         beforeAll(async () => {
-            const data = { "email": baseConfig.email, "password": baseConfig.password };
-            const res = await adminController.postAdminLogin(data);
-            token = res.body.token;
-            console.log('Auth token is ' + token);
+            token = await login(baseConfig.email,baseConfig.password);
             postCategory = await controller
                 .postCategories(req)
                 .set("Authorization", "Bearer " + token);
